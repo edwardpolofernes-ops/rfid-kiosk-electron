@@ -9,8 +9,12 @@ export default function KioskScreen() {
   const [showTopupModal, setShowTopupModal] = useState(false);
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
   const navigate = useNavigate();
   const wsRef = useRef(null);
+
+  // device ID from .env
+  const deviceId = process.env.REACT_APP_DEVICE_ID;
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -23,7 +27,7 @@ export default function KioskScreen() {
       }
     }
   };
-  
+
   // ===============================
   // TOP-UP BUTTON
   // ===============================
@@ -32,7 +36,7 @@ export default function KioskScreen() {
 
     // Start card scan
     await fetch("http://localhost:3001/start-scan")
-      .then(res => res.json())
+      .then((res) => res.json())
       .catch(console.error);
 
     // Open WebSocket
@@ -50,12 +54,11 @@ export default function KioskScreen() {
         // Close websocket
         wsRef.current.close();
 
-        // Redirect to topup with cardNo
+        // Redirect to topup page
         navigate("/topup", { state: { cardNo: data.uid } });
       }
     };
   };
-
 
   // ===============================
   // STOP CARD SCAN WHEN MAIN PAGE LOADS
@@ -80,7 +83,7 @@ export default function KioskScreen() {
     setShowBalanceModal(true);
 
     await fetch("http://localhost:3001/start-scan")
-      .then(res => res.json())
+      .then((res) => res.json())
       .catch(console.error);
 
     wsRef.current = new WebSocket("ws://localhost:8080");
@@ -100,7 +103,7 @@ export default function KioskScreen() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 cardNo: data.uid,
-                deviceId: "e2047211-e92d-4c62-895f-25dd48bc9596"
+                deviceId: deviceId,
               }),
             }
           );
@@ -112,9 +115,9 @@ export default function KioskScreen() {
             title: "Balance Retrieved!",
             text: `Your balance is: ₱${result.balance ?? 0}`,
           });
-
         } catch (error) {
           console.error(error);
+
           Swal.fire({
             icon: "error",
             title: "Error",
@@ -134,11 +137,15 @@ export default function KioskScreen() {
 
   return (
     <div className="kiosk-container">
-      {/* <button className="fullscreen-btn" onClick={toggleFullscreen}>
+      {/* Fullscreen button (optional) */}
+      {/* 
+      <button className="fullscreen-btn" onClick={toggleFullscreen}>
         {isFullscreen ? <FaCompress size={22} /> : <FaExpand size={22} />}
-      </button> */}
+      </button>
+      */}
+
       <div className="kiosk-content">
-        <h1 className="kiosk-title">RFID Smart Kiosk</h1>
+        <h1 className="kiosk-title">Pidgeon Smart Kiosk</h1>
         <p className="kiosk-subtitle">Tap your card to begin</p>
 
         <div className="kiosk-buttons">

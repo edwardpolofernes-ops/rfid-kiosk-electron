@@ -7,6 +7,7 @@ export default function Topup() {
   const navigate = useNavigate();
 
   const scannedCardNo = location.state?.cardNo;
+  const deviceId = process.env.REACT_APP_DEVICE_ID;
 
   const [insertedAmount, setInsertedAmount] = useState(0);
   const [userBalance, setUserBalance] = useState(0);
@@ -24,8 +25,8 @@ export default function Topup() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               cardNo: scannedCardNo,
-              deviceId: "e2047211-e92d-4c62-895f-25dd48bc9596",
-              amount: 0, // just to get current balance
+              deviceId: deviceId,
+              amount: 0,
             }),
           }
         );
@@ -66,7 +67,7 @@ export default function Topup() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 cardNo: scannedCardNo,
-                deviceId: "e2047211-e92d-4c62-895f-25dd48bc9596",
+                deviceId: deviceId,
                 amount: newAmount,
               }),
             }
@@ -85,7 +86,7 @@ export default function Topup() {
     };
 
     return () => ws.close();
-  }, [scannedCardNo, navigate]);
+  }, [scannedCardNo, navigate, deviceId]);
 
   return (
     <div className="topup-container">
